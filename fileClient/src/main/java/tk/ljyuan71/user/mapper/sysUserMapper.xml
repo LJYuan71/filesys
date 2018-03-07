@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tk.ljyuan71.user.dao.SysUserDao">
+  <resultMap id="BaseResultMap" type="tk.ljyuan71.user.model.SysUser">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="account" jdbcType="VARCHAR" property="account" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="pic_fileid" jdbcType="VARCHAR" property="picFileId" />
+    <result column="details_fileid" jdbcType="VARCHAR" property="detailsFileId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id,account,password,username,pic_fileid,details_fileid
+  </sql>
+  <sql id="dynamicWhere">
+	<where>
+		<if test="@Ognl@isNotEmpty(account)">
+	        and account = #{account,jdbcType=VARCHAR},
+	      </if>
+	      <if test="@Ognl@isNotEmpty(password)">
+	        and password = #{password,jdbcType=VARCHAR},
+	      </if>
+	      <if test="@Ognl@isNotEmpty(username)">
+	        and username = #{username,jdbcType=VARCHAR},
+	      </if>
+	      <if test="@Ognl@isNotEmpty(picFileId)">
+	        and pic_fileid = #{picFileId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="@Ognl@isNotEmpty(detailsFileId)">
+	      	and details_fileid = #{detailsFileId,jdbcType=VARCHAR}
+	      </if>
+		  <if test="@Ognl@isNotEmpty(search)"> 
+			AND  
+				(	
+					instr(account,'${search}')>0   or 
+					instr(password,'${search}')>0  or
+					instr(username,'${search}')>0  or
+					instr(pic_fileid,'${search}')>0    or
+					instr(details_fileid,'${search}')>0 
+				)  
+			</if>
+	</where>
+  </sql>
+  <select id="queryById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sys_user
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteById" parameterType="java.lang.String">
+    delete from sys_user
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="tk.ljyuan71.user.model.SysUser">
+    insert into sys_user
+    (<include refid="Base_Column_List"/>) values
+    (
+    	#{id,jdbcType=VARCHAR},
+    	#{account,jdbcType=VARCHAR},
+    	#{password,jdbcType=VARCHAR},
+    	#{username,jdbcType=VARCHAR},
+    	#{picFileId,jdbcType=VARCHAR},
+    	#{detailsFileId,jdbcType=VARCHAR}
+    )
+  </insert>
+  <update id="update" parameterType="tk.ljyuan71.user.model.SysUser">
+    update sys_user
+    <set>
+      <if test="@Ognl@isNotEmpty(account)">
+        account = #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="@Ognl@isNotEmpty(password)">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="@Ognl@isNotEmpty(username)">
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="@Ognl@isNotEmpty(picFileId)">
+        pic_fileid = #{picFileId,jdbcType=VARCHAR},
+      </if>
+      <if test="@Ognl@isNotEmpty(detailsFileId)">
+      	details_fileid = #{detailsFileId,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="queryAll" resultMap="BaseResultMap" parameterType="map">
+    select 
+      <include refid="Base_Column_List" />
+      from sys_user
+      <include refid="dynamicWhere" /> 
+       <if test="@Ognl@isNotEmpty(sort)">
+			order by ${sort} ${order}
+		</if>
+	  <if test="@Ognl@isEmpty(sort)">
+		order by id  desc
+	  </if>
+  </select>
+  <delete id="deleteByIds" parameterType="string">
+	  delete from sys_user where id in
+	  <if test="@Ognl@isNotEmpty(fileIds)">
+	     <foreach collection="fileIds" index="index" item="item" open="(" separator="," close=")">  
+	       #{item}  
+	   	 </foreach>
+	  </if>
+  </delete>
+  
+   <select id="queryTotal"  resultType="Integer">
+       select count(*) from SYS_USER 
+       <include refid="dynamicWhere" /> 
+   </select>
+   
+</mapper>

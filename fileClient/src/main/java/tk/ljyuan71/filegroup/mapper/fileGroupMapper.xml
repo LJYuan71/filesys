@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tk.ljyuan71.filegroup.dao.FileGroupDao">
+  <resultMap id="BaseResultMap" type="tk.ljyuan71.filegroup.model.FileGroup">
+    <id column="file_id" jdbcType="VARCHAR" property="fileId" />
+    <result column="group_id" jdbcType="VARCHAR" property="groupId" />
+    <result column="group_pid" jdbcType="VARCHAR" property="groupPid" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="ext" jdbcType="VARCHAR" property="ext" />
+    <result column="length" jdbcType="BIGINT" property="length" />
+    <result column="md5" jdbcType="VARCHAR" property="md5" />
+    <result column="creator_id" jdbcType="VARCHAR" property="creatorId" />
+    <result column="creator_name" jdbcType="VARCHAR" property="creatorName" />
+    <result column="upload_time" jdbcType="BIGINT" property="uploadTime" />
+    <result column="upload_ip" jdbcType="VARCHAR" property="uploadIP" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="can_del" jdbcType="INTEGER" property="canDel" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    file_id,group_id,group_pid,title,ext,length,md5,creator_id,creator_name,upload_time,upload_ip,status,can_del
+  </sql>
+  <sql id="dynamicWhere">
+	<where>
+	  <if test="@Ognl@isNotEmpty(fileId)">
+	   		file_id = #{fileId,jdbcType=VARCHAR}
+	  </if>
+	  <if test="@Ognl@isNotEmpty(groupId)">
+	       	and group_id = #{groupId,jdbcType=VARCHAR}
+      </if>
+      <if test="@Ognl@isNotEmpty(groupPid)">
+        	and group_pid = #{groupPid,jdbcType=VARCHAR}
+      </if>
+      <if test="@Ognl@isNotEmpty(creatorId)">
+        	and creatorId =  #{creatorId,jdbcType=VARCHAR}
+      </if>
+      <if test="@Ognl@isNotEmpty(status)">
+   			and status = #{status,jdbcType=INTEGER}
+      </if>
+      <if test="@Ognl@isEmpty(status)">
+   			and status != 0
+      </if>
+      <if test="@Ognl@isNotEmpty(md5)">
+        	and md5 = #{md5,jdbcType=VARCHAR}
+      </if>
+      <if test="@Ognl@isNotEmpty(canDel)">
+        	and can_del = #{canDel,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </sql>
+  <select id="queryById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from file_group 
+    where file_id = #{fileId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteById" parameterType="java.lang.String">
+    delete from file_group
+    where file_id = #{fileId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="tk.ljyuan71.filegroup.model.FileGroup">
+    insert into file_group
+    (<include refid="Base_Column_List"/>) values
+    (
+    	#{fileId,jdbcType=VARCHAR},
+    	#{groupId,jdbcType=VARCHAR},
+    	#{groupPid,jdbcType=VARCHAR},
+    	#{title,jdbcType=VARCHAR},
+    	#{ext,jdbcType=VARCHAR},
+    	#{length,jdbcType=BIGINT},
+    	#{md5,jdbcType=VARCHAR},
+    	#{creatorId,jdbcType=VARCHAR},
+    	#{creatorName,jdbcType=VARCHAR},
+    	#{uploadTime,jdbcType=BIGINT},
+    	#{uploadIP,jdbcType=VARCHAR},
+    	#{status,jdbcType=INTEGER},
+    	#{canDel,jdbcType=INTEGER}
+    )
+  </insert>
+  <update id="updateStatus" parameterType="tk.ljyuan71.filegroup.model.FileGroup">
+    update file_group
+    <set>
+      <if test="@Ognl@isNotEmpty(newStatus)">
+        status = #{newStatus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <include refid="dynamicWhere" /> 
+  </update>
+  <select id="queryAll" resultMap="BaseResultMap" parameterType="map">
+    select 
+      <include refid="Base_Column_List" />
+      from file_group
+      <include refid="dynamicWhere" /> 
+       <if test="@Ognl@isNotEmpty(sort)">
+			order by ${sort} ${order}
+		</if>
+	  <if test="@Ognl@isEmpty(sort)">
+		order by upload_time  desc
+	  </if>
+  </select>
+  
+  <select id="queryFileByGroup" resultMap="BaseResultMap" parameterType="java.util.Map">
+    select 
+    <include refid="Base_Column_List" />
+    from sys_file
+    <where>
+    	status = 1
+      <if test="@Ognl@isNotEmpty(groupId)">
+        and group_id = #{groupId,jdbcType=VARCHAR}
+      </if>
+   	  <if test="@Ognl@isNotEmpty(groupPid)">
+       	and group_pid = #{groupPid,jdbcType=VARCHAR}
+      </if>
+      <if test="@Ognl@isNotEmpty(fileIds)">
+        and file_id in 
+        <foreach collection="fileIds" index="index" item="item" open="(" separator="," close=")">  
+        	#{item}  
+    	</foreach>
+      </if>
+    </where>
+  </select>
+   <select id="queryTotal"  resultType="Integer">
+       select count(*) from file_group 
+       <include refid="dynamicWhere" /> 
+   </select>
+</mapper>
