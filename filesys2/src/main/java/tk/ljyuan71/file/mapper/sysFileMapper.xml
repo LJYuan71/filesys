@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tk.ljyuan71.file.dao.SysFileDao">
+  <resultMap id="BaseResultMap" type="tk.ljyuan71.file.model.SysFile">
+    <id column="file_id" jdbcType="VARCHAR" property="fileId" />
+    <result column="sys_id" jdbcType="VARCHAR" property="sysId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="sys_id" jdbcType="VARCHAR" property="sysId" />
+    <result column="ext" jdbcType="VARCHAR" property="ext" />
+    <result column="length" jdbcType="BIGINT" property="length" />
+    <result column="md5" jdbcType="VARCHAR" property="md5" />
+    <result column="upload_time" jdbcType="BIGINT" property="uploadTime" />
+    <result column="real_time" jdbcType="BIGINT" property="realTime" />
+    <result column="real_file" jdbcType="INTEGER" property="realFile" />
+    <result column="group_id" jdbcType="VARCHAR" property="groupId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="can_del" jdbcType="INTEGER" property="canDel" />
+    <result column="upload_ip" jdbcType="VARCHAR" property="uploadIP" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    file_id,sys_id,user_id,title,ext,length,md5,upload_time,real_time,real_file ,group_id,status,can_del,upload_ip
+  </sql>
+  <select id="queryById" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sys_file2
+    where file_id = #{fileId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteById" parameterType="java.lang.String">
+    delete from sys_file2
+    where file_id = #{fileId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="tk.ljyuan71.file.model.SysFile">
+    insert into sys_file2
+    (<include refid="Base_Column_List"/>) values
+    (
+    	#{fileId,jdbcType=VARCHAR},
+    	#{sysId,jdbcType=VARCHAR},
+    	#{userId,jdbcType=VARCHAR},
+    	#{title,jdbcType=VARCHAR},
+    	#{ext,jdbcType=VARCHAR},
+    	#{length,jdbcType=BIGINT},
+    	#{md5,jdbcType=VARCHAR},
+    	#{uploadTime,jdbcType=BIGINT},
+    	#{realTime,jdbcType=BIGINT},
+    	#{realFile,jdbcType=NUMERIC},
+    	#{groupId,jdbcType=VARCHAR},
+    	#{status,jdbcType=INTEGER},
+    	#{canDel,jdbcType=INTEGER},
+    	#{uploadIP,jdbcType=VARCHAR}
+    )
+  </insert>
+  <update id="update" parameterType="tk.ljyuan71.file.model.SysFile">
+    update sys_file2
+    <set>
+      <if test="@Ognl@isNotEmpty(status)">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="@Ognl@isNotEmpty(groupId)">
+        group_id = #{groupId,jdbcType=VARCHAR},
+      </if>
+      <if test="@Ognl@isNotEmpty(canDel)">
+        can_del = #{canDel,jdbcType=VARCHAR},
+      </if>
+      <if test="@Ognl@isNotEmpty(uploadIP)">
+      	upload_ip = #{uploadIP,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where file_id = #{fileId,jdbcType=VARCHAR}
+  </update>
+  <select id="queryRealFile" resultMap="BaseResultMap" parameterType="map">
+    select 
+    <include refid="Base_Column_List" />
+    from sys_file2
+    <where>
+	   	<if test="@Ognl@isNotEmpty(realFile)">
+	   		real_file = #{realFile,jdbcType=INTEGER}
+	   	</if>
+	   	<if test="@Ognl@isEmpty(realFile)">
+	   		real_file = 1
+	   	</if>
+	   	<if test="@Ognl@isNotEmpty(sysId)">
+	       	and sys_id = #{sysId,jdbcType=VARCHAR}
+       </if>
+      <if test="@Ognl@isNotEmpty(userId)">
+        	and user_id = #{userId,jdbcType=VARCHAR}
+      </if>
+      <if test="@Ognl@isNotEmpty(status)">
+        	and status =  #{status,jdbcType=INTEGER}
+      </if>
+      <if test="@Ognl@isEmpty(status)">
+   			and status = 1
+      </if>
+      <if test="@Ognl@isNotEmpty(md5)">
+        	and md5 = #{md5,jdbcType=VARCHAR}
+      </if>
+      <if test="@Ognl@isNotEmpty(length)">
+        	and length = #{length,jdbcType=VARCHAR}
+      </if>
+    </where>
+    order by upload_time desc
+  </select>
+  <select id="queryFileByGroupId" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select 
+    <include refid="Base_Column_List" />
+    from sys_file2
+    where status = 1 
+    and group_id = #{groupId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="queryFileByGroup" resultMap="BaseResultMap" parameterType="java.util.Map">
+    select 
+    <include refid="Base_Column_List" />
+    from sys_file2
+    <where>
+    	status = 1
+      <if test="@Ognl@isNotEmpty(groupId)">
+        and group_id = #{groupId,jdbcType=VARCHAR}
+      </if>
+   	  <if test="@Ognl@isNotEmpty(groupIds)">
+       	and group_id in 
+       	<foreach collection="groupIds" index="index" item="item" open="(" separator="," close=")">  
+        	#{item}  
+    	</foreach>
+      </if>
+      <if test="@Ognl@isNotEmpty(fileIds)">
+        and file_id in 
+        <foreach collection="fileIds" index="index" item="item" open="(" separator="," close=")">  
+        	#{item}  
+    	</foreach>
+      </if>
+    </where>
+  </select>
+  
+</mapper>
