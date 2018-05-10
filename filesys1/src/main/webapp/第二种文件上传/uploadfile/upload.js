@@ -309,11 +309,14 @@
                         return;
                     }
                     //图片文件并且设置了宽高的
-                    if((_imgWidth && _imgHeight ) && (_imageW != _imgWidth || _imgHeight != _imageH)){
+                    //产品人员说页面限制还不如不限制
+                    /*
+                     * if((_imgWidth && _imgHeight ) && (_imageW != _imgWidth || _imgHeight != _imageH)){
 	                    	alert("请上传"+_imgWidth+" * " + _imgHeight + "的图片");
 	                    	location.reload(true);
 	                    	return;
                     	}
+                    */
                     if( isSupportBase64 ) {
                         img = $('<img src="'+src+'">');
                         $wrap.empty().append( img );

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>   上传文件     </title>
+   	<!--  <link rel="stylesheet" type="text/css" href="../../css/webuploader.css" />
+    <link rel="stylesheet" type="text/css" href="./style.css" /> -->
+    <link rel="stylesheet" type="text/css" href="${base}/res/common/plugin/webuploader/webuploader.css" />
+    <link rel="stylesheet" type="text/css" href="${base}/res/common/plugin/webuploader/custom/uploadfile/style.css" />
+    
+    <script type="text/javascript">
+    	var appContextPath = "${base}";
+    	var _sysId = "${pb.sysId!}";
+    	var _flag = "${pb.flag!}";
+    	var _multiple = "${pb.multiple!}";
+    	var _filter = "${pb.filter!}";
+    	
+    	var _mimeTypes = "${pb.mimeTypes!}";
+    	if(_filter && !_mimeTypes) _mimeTypes = "."+_filter.replace(new RegExp(',','g'),',.');
+    	
+    	//var _mimeTypes = 'application/x-rar-compressed';
+    	var _isOnlyImg = "${pb.isOnlyImg!}";
+    	
+    	var _url = "${pb.url!}";
+    	var _test = "${pb.test!}";
+    	var _paramJsonStr = '<#noescape>${paramJsonStr!}</#noescape>';
+    	var _fileNumLimit = "${pb.fileNumLimit!}";
+    	var _fileSingleSizeLimit = "${pb.fileSingleSizeLimit!}";
+    	var _imgWidth = "${pb.imgWidth!}";
+   		var _imgHeight = "${pb.imgHeight!}";
+    	var _files = [];
+    	
+    	var fileNumLimit_custom = (_fileNumLimit)? _fileNumLimit:1;
+    	var fileSingleSizeLimit_custom = (_fileSingleSizeLimit)? _fileSingleSizeLimit:1 * 1024 * 1024;
+    	//alert(fileSingleSizeLimit_custom);
+    	
+    </script>
+    
+    <script type="text/javascript" src="${base}/res/common/plugin/webuploader/jquery.js"></script>
+    <script type="text/javascript" src="${base}/res/common/plugin/webuploader/webuploader.js"></script>
+    <script type="text/javascript" src="${base}/res/common/plugin/webuploader/custom/uploadfile/upload.js"></script>
+</head>
+<body>
+	
+	<iframe id="myframe" name="myframe" style="display:none;"></iframe>
+	<form id="myform" name="myform" action="" method="post" target="myframe" style="display: none;">
+		<input type="hidden" name="paramJsonStr" value="">
+		<input type="hidden" name="fileJsonStr" value="">
+	</form>
+	
+    <div id="wrapper">
+        <div id="container">
+            <!--头部，相册选择和格式选择-->
+
+            <div id="uploader">
+                <div class="queueList">
+                    <div id="dndArea" class="placeholder">
+                        <div id="filePicker"></div>
+                        <p>或将文件拖到这里</p>
+                    </div>
+                </div>
+                <div class="statusBar" style="display:none;">
+                    <div class="progress">
+                        <span class="text">0%</span>
+                        <span class="percentage"></span>
+                    </div><div class="info"></div>
+                    <div class="btns">
+                        <div id="filePicker2" style="display:none;"></div><div class="uploadBtn">开始上传</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    
+</body>
+</html>
